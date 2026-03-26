@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Project, Card, ProjectsData } from "@/lib/types";
+import { Project, Card } from "@/lib/types";
+import { loadProjects, saveProjects as persistProjects } from "@/lib/storage";
 import TabBar from "@/components/TabBar";
 import CardList from "@/components/CardList";
 import SidePanel from "@/components/SidePanel";
@@ -15,27 +16,18 @@ export default function Home() {
   const [isPanelOpen, setIsPanelOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
-  const fetchProjects = useCallback(async () => {
-    const res = await fetch("/api/projects");
-    const data: ProjectsData = await res.json();
+  useEffect(() => {
+    const data = loadProjects();
     setProjects(data.projects);
-    if (data.projects.length > 0 && !activeProjectId) {
+    if (data.projects.length > 0) {
       setActiveProjectId(data.projects[0].id);
     }
     setIsLoading(false);
-  }, [activeProjectId]);
+  }, []);
 
-  useEffect(() => {
-    fetchProjects();
-  }, [fetchProjects]);
-
-  const saveProjects = async (updated: Project[]) => {
+  const saveAndUpdate = (updated: Project[]) => {
     setProjects(updated);
-    await fetch("/api/projects", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ projects: updated }),
-    });
+    persistProjects({ projects: updated });
   };
 
   const activeProject = projects.find((p) => p.id === activeProjectId);
@@ -51,13 +43,12 @@ export default function Home() {
       sortOrder: projects.length,
       cards: [],
     };
-    saveProjects([...projects, newProject]);
+    saveAndUpdate([...projects, newProject]);
     setActiveProjectId(newProject.id);
   };
 
   const handleRenameProject = (id: string, name: string) => {
-    const updated = projects.map((p) => (p.id === id ? { ...p, name } : p));
-    saveProjects(updated);
+    saveAndUpdate(projects.map((p) => (p.id === id ? { ...p, name } : p)));
   };
 
   const handleDeleteProject = (id: string) => {
@@ -65,7 +56,7 @@ export default function Home() {
     if (activeProjectId === id && updated.length > 0) {
       setActiveProjectId(updated[0].id);
     }
-    saveProjects(updated);
+    saveAndUpdate(updated);
   };
 
   // Card management
@@ -84,10 +75,11 @@ export default function Home() {
     cards.splice(newIndex, 0, moved);
 
     const reordered = cards.map((c, i) => ({ ...c, sortOrder: i }));
-    const updated = projects.map((p) =>
-      p.id === activeProjectId ? { ...p, cards: reordered } : p
+    saveAndUpdate(
+      projects.map((p) =>
+        p.id === activeProjectId ? { ...p, cards: reordered } : p
+      )
     );
-    saveProjects(updated);
   };
 
   const handleCardClick = (card: Card) => {
@@ -96,31 +88,33 @@ export default function Home() {
   };
 
   const handleCardSave = (updatedCard: Card) => {
-    const updated = projects.map((p) =>
-      p.id === activeProjectId
-        ? {
-            ...p,
-            cards: p.cards.map((c) =>
-              c.id === updatedCard.id ? updatedCard : c
-            ),
-          }
-        : p
+    saveAndUpdate(
+      projects.map((p) =>
+        p.id === activeProjectId
+          ? {
+              ...p,
+              cards: p.cards.map((c) =>
+                c.id === updatedCard.id ? updatedCard : c
+              ),
+            }
+          : p
+      )
     );
-    saveProjects(updated);
   };
 
   const handleCardDelete = (cardId: string) => {
-    const updated = projects.map((p) =>
-      p.id === activeProjectId
-        ? {
-            ...p,
-            cards: p.cards
-              .filter((c) => c.id !== cardId)
-              .map((c, i) => ({ ...c, sortOrder: i })),
-          }
-        : p
+    saveAndUpdate(
+      projects.map((p) =>
+        p.id === activeProjectId
+          ? {
+              ...p,
+              cards: p.cards
+                .filter((c) => c.id !== cardId)
+                .map((c, i) => ({ ...c, sortOrder: i })),
+            }
+          : p
+      )
     );
-    saveProjects(updated);
   };
 
   const handleAddCard = (name: string) => {
@@ -133,10 +127,11 @@ export default function Home() {
       notes: "",
       sortOrder: activeProject.cards.length,
     };
-    const updated = projects.map((p) =>
-      p.id === activeProjectId ? { ...p, cards: [...p.cards, newCard] } : p
+    saveAndUpdate(
+      projects.map((p) =>
+        p.id === activeProjectId ? { ...p, cards: [...p.cards, newCard] } : p
+      )
     );
-    saveProjects(updated);
   };
 
   const handleExportPdf = () => {
