@@ -1,4 +1,4 @@
-import { put, get } from "@vercel/blob";
+import { put, get, del } from "@vercel/blob";
 import { NextResponse } from "next/server";
 import { ProjectsData } from "@/lib/types";
 import { generateSeedData } from "@/lib/seed-data";
@@ -47,6 +47,25 @@ export async function PUT(request: Request) {
     console.error("Failed to write to Blob:", error);
     return NextResponse.json(
       { error: "Failed to save projects" },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE() {
+  try {
+    // Try to delete existing blob, ignore if not found
+    try {
+      await del(BLOB_PATH);
+    } catch {
+      // Blob may not exist yet, that's fine
+    }
+    // Reseed with original data
+    return await seedAndReturn();
+  } catch (error) {
+    console.error("Failed to reseed:", error);
+    return NextResponse.json(
+      { error: "Failed to reseed projects" },
       { status: 500 }
     );
   }

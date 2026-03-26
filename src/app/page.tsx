@@ -143,6 +143,30 @@ export default function Home() {
     window.print();
   };
 
+  const handleReseed = async () => {
+    if (
+      !window.confirm(
+        "Reset all data to the original seed? This will erase all changes."
+      )
+    )
+      return;
+
+    try {
+      setIsLoading(true);
+      const res = await fetch("/api/projects", { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to reseed");
+      const data = await res.json();
+      setProjects(data.projects);
+      if (data.projects.length > 0) {
+        setActiveProjectId(data.projects[0].id);
+      }
+    } catch (err) {
+      console.error("Failed to reseed:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -158,9 +182,18 @@ export default function Home() {
           <h1 className="text-xl font-bold text-slate-800 tracking-tight">
             NPD Process Tracker
           </h1>
-          <span className="text-xs text-slate-400 print:hidden">
-            {sortedCards.length} steps
-          </span>
+          <div className="flex items-center gap-3 print:hidden">
+            <span className="text-xs text-slate-400">
+              {sortedCards.length} steps
+            </span>
+            <button
+              onClick={handleReseed}
+              className="text-xs text-slate-400 hover:text-red-500 transition-colors"
+              title="Reset all data to original seed"
+            >
+              Reset Data
+            </button>
+          </div>
         </div>
       </header>
 
