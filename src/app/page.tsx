@@ -143,57 +143,24 @@ export default function Home() {
     window.print();
   };
 
-  const handleReseed = async () => {
-    if (
-      !window.confirm(
-        "Reset all data to the original seed? This will erase all changes."
-      )
-    )
-      return;
-
-    try {
-      setIsLoading(true);
-      const res = await fetch("/api/projects", { method: "DELETE" });
-      if (!res.ok) throw new Error("Failed to reseed");
-      const data = await res.json();
-      setProjects(data.projects);
-      if (data.projects.length > 0) {
-        setActiveProjectId(data.projects[0].id);
-      }
-    } catch (err) {
-      console.error("Failed to reseed:", err);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-500">Loading projects...</div>
+      <div className="min-h-screen flex items-center justify-center bg-stone-100">
+        <div className="text-stone-500">Loading projects...</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      <header className="bg-white border-b border-slate-200 print:border-none">
+    <div className="min-h-screen bg-stone-100">
+      <header className="bg-white border-b border-stone-300 print:border-none">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold text-slate-800 tracking-tight">
+          <h1 className="text-xl font-bold text-stone-900 tracking-tight">
             NPD Process Tracker
           </h1>
-          <div className="flex items-center gap-3 print:hidden">
-            <span className="text-xs text-slate-400">
-              {sortedCards.length} steps
-            </span>
-            <button
-              onClick={handleReseed}
-              className="text-xs text-slate-400 hover:text-red-500 transition-colors"
-              title="Reset all data to original seed"
-            >
-              Reset Data
-            </button>
-          </div>
+          <span className="text-sm text-stone-500 print:hidden">
+            {sortedCards.length} steps
+          </span>
         </div>
       </header>
 
@@ -211,10 +178,10 @@ export default function Home() {
 
       {/* Print header */}
       <div className="hidden print:block px-6 py-4">
-        <h2 className="text-lg font-bold text-slate-800">
+        <h2 className="text-lg font-bold text-stone-900">
           {activeProject?.name}
         </h2>
-        <p className="text-xs text-slate-500 mt-1">
+        <p className="text-xs text-stone-500 mt-1">
           {sortedCards.length} steps
         </p>
       </div>
@@ -232,7 +199,7 @@ export default function Home() {
             </div>
           </>
         ) : (
-          <div className="text-center text-slate-500 py-12">
+          <div className="text-center text-stone-500 py-12">
             No projects yet. Add a project to get started.
           </div>
         )}
@@ -253,7 +220,7 @@ export default function Home() {
       <div className="hidden print:block px-6">
         <table className="w-full text-xs border-collapse">
           <thead>
-            <tr className="border-b border-slate-300">
+            <tr className="border-b border-stone-300">
               <th className="text-left py-1 pr-2 w-8">#</th>
               <th className="text-left py-1 pr-2">Step</th>
               <th className="text-left py-1 pr-2 w-32">Department</th>
@@ -262,11 +229,11 @@ export default function Home() {
           </thead>
           <tbody>
             {sortedCards.map((card, i) => (
-              <tr key={card.id} className="border-b border-slate-100">
-                <td className="py-1 pr-2 text-slate-400">{i + 1}</td>
-                <td className="py-1 pr-2">{card.name}</td>
-                <td className="py-1 pr-2 text-slate-500">{card.department}</td>
-                <td className="py-1 text-slate-500">{card.notes}</td>
+              <tr key={card.id} className="border-b border-stone-200">
+                <td className="py-1 pr-2 text-stone-400">{i + 1}</td>
+                <td className="py-1 pr-2 text-stone-900">{card.name}</td>
+                <td className="py-1 pr-2 text-stone-600">{card.department}</td>
+                <td className="py-1 text-stone-600">{card.notes}</td>
               </tr>
             ))}
           </tbody>

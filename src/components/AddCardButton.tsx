@@ -23,7 +23,7 @@ export default function AddCardButton({ onAdd }: AddCardButtonProps) {
     return (
       <button
         onClick={() => setIsAdding(true)}
-        className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-slate-200 rounded-lg text-sm text-slate-400 hover:text-slate-600 hover:border-slate-300 transition-colors print:hidden"
+        className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-stone-300 rounded-lg text-sm text-stone-400 hover:text-teal-600 hover:border-teal-400 transition-colors print:hidden"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -58,12 +58,12 @@ export default function AddCardButton({ onAdd }: AddCardButtonProps) {
           }
         }}
         placeholder="Card name"
-        className="flex-1 border border-slate-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 focus:border-transparent"
+        className="flex-1 border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
         autoFocus
       />
       <button
         onClick={handleAdd}
-        className="px-3 py-2 bg-slate-800 text-white text-sm font-medium rounded-lg hover:bg-slate-700 transition-colors"
+        className="px-3 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors"
       >
         Add
       </button>
@@ -72,7 +72,7 @@ export default function AddCardButton({ onAdd }: AddCardButtonProps) {
           setIsAdding(false);
           setName("");
         }}
-        className="px-3 py-2 text-sm text-slate-500 hover:text-slate-700"
+        className="px-3 py-2 text-sm text-stone-500 hover:text-stone-700"
       >
         Cancel
       </button>
