@@ -57,15 +57,15 @@ export default function SidePanel({
   return (
     <>
       <div
-        className="fixed inset-0 bg-black/20 z-40 print:hidden"
+        className="fixed inset-0 bg-black/50 z-40 print:hidden"
         onClick={handleSave}
       />
-      <div className="fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-xl z-50 flex flex-col border-l border-stone-200 print:hidden animate-slide-in">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-stone-200">
-          <h2 className="text-lg font-semibold text-stone-900">Edit Card</h2>
+      <div className="fixed top-0 right-0 h-full w-full max-w-md bg-slate-900 shadow-xl z-50 flex flex-col border-l border-slate-700 print:hidden animate-slide-in">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-700">
+          <h2 className="text-lg font-semibold text-slate-100">Edit Card</h2>
           <button
             onClick={handleSave}
-            className="text-stone-400 hover:text-stone-600 transition-colors"
+            className="text-slate-500 hover:text-slate-300 transition-colors"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -86,25 +86,25 @@ export default function SidePanel({
 
         <div className="flex-1 overflow-y-auto px-6 py-5 space-y-5">
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">
               Card Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">
               Responsible Department
             </label>
             <select
               value={department}
               onChange={(e) => setDepartment(e.target.value)}
-              className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white"
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="">— Select Department —</option>
               {DEPARTMENTS.map((dept) => (
@@ -116,29 +116,29 @@ export default function SidePanel({
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1.5">
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">
               Notes
             </label>
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               rows={6}
-              className="w-full border border-stone-300 rounded-lg px-3 py-2 text-sm text-stone-900 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent resize-y"
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
               placeholder="Add notes..."
             />
           </div>
         </div>
 
-        <div className="px-6 py-4 border-t border-stone-200 flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-slate-700 flex items-center justify-between">
           <button
             onClick={handleDelete}
-            className="text-sm text-red-500 hover:text-red-700 font-medium transition-colors"
+            className="text-sm text-red-400 hover:text-red-300 font-medium transition-colors"
           >
             Delete Card
           </button>
           <button
             onClick={handleSave}
-            className="px-4 py-2 bg-teal-600 text-white text-sm font-medium rounded-lg hover:bg-teal-700 transition-colors"
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-500 transition-colors"
           >
             Save & Close
           </button>

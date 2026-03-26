@@ -51,15 +51,15 @@ export default function TabBar({
   };
 
   return (
-    <div className="border-b border-stone-300 bg-white">
+    <div className="border-b border-slate-700 bg-slate-900">
       <div className="flex items-center gap-1 px-4 pt-2 overflow-x-auto">
         {projects.map((project) => (
           <div
             key={project.id}
             className={`group relative flex items-center gap-1 px-4 py-2.5 text-sm font-medium cursor-pointer rounded-t-lg transition-colors ${
               activeProjectId === project.id
-                ? "bg-stone-100 text-teal-700 border border-stone-300 border-b-stone-100 -mb-px z-10"
-                : "text-stone-500 hover:text-stone-800 hover:bg-stone-50"
+                ? "bg-slate-950 text-blue-400 border border-slate-700 border-b-slate-950 -mb-px z-10"
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
             }`}
             onClick={() => onSelectProject(project.id)}
           >
@@ -74,7 +74,7 @@ export default function TabBar({
                   if (e.key === "Escape") setEditingId(null);
                 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white border border-stone-300 rounded px-1.5 py-0.5 text-sm w-32 focus:outline-none focus:ring-1 focus:ring-teal-500"
+                className="bg-slate-800 border border-slate-600 rounded px-1.5 py-0.5 text-sm text-slate-100 w-32 focus:outline-none focus:ring-1 focus:ring-blue-500"
                 autoFocus
               />
             ) : (
@@ -93,7 +93,7 @@ export default function TabBar({
                     e.stopPropagation();
                     handleDelete(project.id, project.name);
                   }}
-                  className="ml-1 opacity-0 group-hover:opacity-100 text-stone-400 hover:text-red-500 transition-opacity"
+                  className="ml-1 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-opacity"
                   title="Delete project"
                 >
                   <svg
@@ -130,12 +130,12 @@ export default function TabBar({
                 }
               }}
               placeholder="Project name"
-              className="border border-stone-300 rounded px-2 py-1 text-sm w-36 focus:outline-none focus:ring-1 focus:ring-teal-500"
+              className="bg-slate-800 border border-slate-600 rounded px-2 py-1 text-sm text-slate-100 w-36 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
               autoFocus
             />
             <button
               onClick={handleAdd}
-              className="text-teal-700 hover:text-teal-900 text-sm font-medium px-2 py-1"
+              className="text-blue-400 hover:text-blue-300 text-sm font-medium px-2 py-1"
             >
               Add
             </button>
@@ -144,7 +144,7 @@ export default function TabBar({
                 setIsAdding(false);
                 setNewName("");
               }}
-              className="text-stone-400 hover:text-stone-600 text-sm px-1"
+              className="text-slate-500 hover:text-slate-300 text-sm px-1"
             >
               Cancel
             </button>
@@ -152,7 +152,7 @@ export default function TabBar({
         ) : (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-1 px-3 py-2 text-sm text-stone-400 hover:text-teal-600 transition-colors"
+            className="flex items-center gap-1 px-3 py-2 text-sm text-slate-500 hover:text-blue-400 transition-colors"
             title="Add new project"
           >
             <svg
@@ -175,7 +175,7 @@ export default function TabBar({
         <div className="ml-auto flex items-center pr-2">
           <button
             onClick={onExportPdf}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-stone-500 hover:text-teal-700 hover:bg-stone-100 rounded transition-colors print:hidden"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-slate-400 hover:text-blue-400 hover:bg-slate-800 rounded transition-colors print:hidden"
             title="Export to PDF"
           >
             <svg

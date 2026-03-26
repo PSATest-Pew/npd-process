@@ -28,15 +28,15 @@ export default function CardItem({ card, onClick }: CardItemProps) {
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-center gap-3 bg-white border border-stone-200 rounded-lg px-4 py-3 cursor-pointer hover:border-stone-300 hover:shadow-sm transition-all ${
-        isDragging ? "shadow-lg opacity-90 z-50 border-teal-300" : ""
+      className={`flex items-center gap-3 bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 cursor-pointer hover:border-slate-500 hover:bg-slate-750 transition-all ${
+        isDragging ? "shadow-lg shadow-blue-500/10 opacity-90 z-50 border-blue-500" : ""
       }`}
       onClick={onClick}
     >
       <button
         {...attributes}
         {...listeners}
-        className="flex-shrink-0 cursor-grab active:cursor-grabbing text-stone-300 hover:text-stone-500 touch-none"
+        className="flex-shrink-0 cursor-grab active:cursor-grabbing text-slate-600 hover:text-slate-400 touch-none"
         onClick={(e) => e.stopPropagation()}
         title="Drag to reorder"
       >
@@ -56,12 +56,12 @@ export default function CardItem({ card, onClick }: CardItemProps) {
         </svg>
       </button>
 
-      <span className="flex-1 text-sm text-stone-900 font-medium print:text-xs">
+      <span className="flex-1 text-sm text-slate-100 font-medium print:text-xs">
         {card.name}
       </span>
 
       {card.department && (
-        <span className="flex-shrink-0 text-xs bg-teal-50 text-teal-700 px-2.5 py-0.5 rounded-full border border-teal-200 font-medium">
+        <span className="flex-shrink-0 text-xs bg-blue-500/15 text-blue-400 px-2.5 py-0.5 rounded-full border border-blue-500/30 font-medium">
           {card.department}
         </span>
       )}
