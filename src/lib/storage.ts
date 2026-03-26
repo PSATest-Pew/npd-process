@@ -1,34 +1,20 @@
 import { ProjectsData } from "./types";
-import { generateSeedData } from "./seed-data";
 
-const STORAGE_KEY = "npd-process-data";
-
-export function loadProjects(): ProjectsData {
-  if (typeof window === "undefined") {
-    return { projects: [] };
+export async function loadProjects(): Promise<ProjectsData> {
+  const res = await fetch("/api/projects");
+  if (!res.ok) {
+    throw new Error("Failed to load projects");
   }
-
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored);
-    }
-  } catch (err) {
-    console.error("Failed to load from localStorage:", err);
-  }
-
-  // First time: generate seed data and persist it
-  const seed = generateSeedData();
-  saveProjects(seed);
-  return seed;
+  return res.json();
 }
 
-export function saveProjects(data: ProjectsData): void {
-  if (typeof window === "undefined") return;
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch (err) {
-    console.error("Failed to save to localStorage:", err);
+export async function saveProjects(data: ProjectsData): Promise<void> {
+  const res = await fetch("/api/projects", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) {
+    throw new Error("Failed to save projects");
   }
 }

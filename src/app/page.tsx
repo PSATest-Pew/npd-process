@@ -17,17 +17,22 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const data = loadProjects();
-    setProjects(data.projects);
-    if (data.projects.length > 0) {
-      setActiveProjectId(data.projects[0].id);
-    }
-    setIsLoading(false);
+    loadProjects()
+      .then((data) => {
+        setProjects(data.projects);
+        if (data.projects.length > 0) {
+          setActiveProjectId(data.projects[0].id);
+        }
+      })
+      .catch((err) => console.error("Failed to load projects:", err))
+      .finally(() => setIsLoading(false));
   }, []);
 
   const saveAndUpdate = (updated: Project[]) => {
     setProjects(updated);
-    persistProjects({ projects: updated });
+    persistProjects({ projects: updated }).catch((err) =>
+      console.error("Failed to save:", err)
+    );
   };
 
   const activeProject = projects.find((p) => p.id === activeProjectId);
