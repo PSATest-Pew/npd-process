@@ -7,7 +7,7 @@ const BLOB_PATH = "projects.json";
 
 export async function GET() {
   try {
-    const result = await get(BLOB_PATH, { access: "public" });
+    const result = await get(BLOB_PATH, { access: "private" });
 
     if (result && result.statusCode === 200) {
       const text = await new Response(result.stream).text();
@@ -25,9 +25,11 @@ export async function GET() {
     ) {
       return await seedAndReturn();
     }
-    console.error("Failed to read from Blob:", error);
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("Failed to read from Blob:", message, error);
     return NextResponse.json(
-      { error: "Failed to load projects" },
+      { error: "Failed to load projects", detail: message },
       { status: 500 }
     );
   }
@@ -37,16 +39,18 @@ export async function PUT(request: Request) {
   try {
     const data: ProjectsData = await request.json();
     await put(BLOB_PATH, JSON.stringify(data), {
-      access: "public",
+      access: "private",
       addRandomSuffix: false,
       allowOverwrite: true,
       contentType: "application/json",
     });
     return NextResponse.json({ success: true });
   } catch (error) {
-    console.error("Failed to write to Blob:", error);
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("Failed to write to Blob:", message, error);
     return NextResponse.json(
-      { error: "Failed to save projects" },
+      { error: "Failed to save projects", detail: message },
       { status: 500 }
     );
   }
@@ -63,9 +67,11 @@ export async function DELETE() {
     // Reseed with original data
     return await seedAndReturn();
   } catch (error) {
-    console.error("Failed to reseed:", error);
+    const message =
+      error instanceof Error ? error.message : "Unknown error";
+    console.error("Failed to reseed:", message, error);
     return NextResponse.json(
-      { error: "Failed to reseed projects" },
+      { error: "Failed to reseed projects", detail: message },
       { status: 500 }
     );
   }
@@ -74,7 +80,7 @@ export async function DELETE() {
 async function seedAndReturn() {
   const seed = generateSeedData();
   await put(BLOB_PATH, JSON.stringify(seed), {
-    access: "public",
+    access: "private",
     addRandomSuffix: false,
     allowOverwrite: true,
     contentType: "application/json",
