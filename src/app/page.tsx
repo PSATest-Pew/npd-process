@@ -63,6 +63,19 @@ export default function Home() {
     saveAndUpdate(updated);
   };
 
+  const handleReorderProjects = (activeId: string, overId: string) => {
+    const sorted = [...projects].sort((a, b) => a.sortOrder - b.sortOrder);
+    const oldIndex = sorted.findIndex((p) => p.id === activeId);
+    const newIndex = sorted.findIndex((p) => p.id === overId);
+    if (oldIndex === -1 || newIndex === -1) return;
+
+    const [moved] = sorted.splice(oldIndex, 1);
+    sorted.splice(newIndex, 0, moved);
+
+    const reordered = sorted.map((p, i) => ({ ...p, sortOrder: i }));
+    saveAndUpdate(reordered);
+  };
+
   const handleReorder = (activeId: string, overId: string) => {
     if (!activeProject) return;
 
@@ -128,6 +141,8 @@ export default function Home() {
       name,
       department: "",
       notes: "",
+      whatThisMeans: "",
+      whatIfWeDont: "",
       sortOrder: activeProject.cards.length,
     };
     saveAndUpdate(
@@ -170,6 +185,7 @@ export default function Home() {
           onAddProject={handleAddProject}
           onRenameProject={handleRenameProject}
           onDeleteProject={handleDeleteProject}
+          onReorderProjects={handleReorderProjects}
           onExportPdf={handleExportPdf}
         />
       </div>

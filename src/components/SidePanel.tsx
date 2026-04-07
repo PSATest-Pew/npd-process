@@ -21,12 +21,16 @@ export default function SidePanel({
   const [name, setName] = useState("");
   const [department, setDepartment] = useState("");
   const [notes, setNotes] = useState("");
+  const [whatThisMeans, setWhatThisMeans] = useState("");
+  const [whatIfWeDont, setWhatIfWeDont] = useState("");
 
   useEffect(() => {
     if (card) {
       setName(card.name);
       setDepartment(card.department);
       setNotes(card.notes);
+      setWhatThisMeans(card.whatThisMeans || "");
+      setWhatIfWeDont(card.whatIfWeDont || "");
     }
   }, [card]);
 
@@ -37,6 +41,8 @@ export default function SidePanel({
         name: name.trim(),
         department,
         notes,
+        whatThisMeans,
+        whatIfWeDont,
       });
       onClose();
     }
@@ -99,6 +105,32 @@ export default function SidePanel({
 
           <div>
             <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              What this means
+            </label>
+            <textarea
+              value={whatThisMeans}
+              onChange={(e) => setWhatThisMeans(e.target.value)}
+              rows={3}
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+              placeholder="Describe what this step means..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">
+              What if we don&apos;t do it
+            </label>
+            <textarea
+              value={whatIfWeDont}
+              onChange={(e) => setWhatIfWeDont(e.target.value)}
+              rows={3}
+              className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
+              placeholder="What are the risks of skipping this step..."
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-slate-300 mb-1.5">
               Responsible Department
             </label>
             <select
@@ -122,7 +154,7 @@ export default function SidePanel({
             <textarea
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              rows={6}
+              rows={4}
               className="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-y"
               placeholder="Add notes..."
             />

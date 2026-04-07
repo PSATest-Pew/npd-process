@@ -3,6 +3,8 @@ export interface Card {
   name: string;
   department: string;
   notes: string;
+  whatThisMeans: string;
+  whatIfWeDont: string;
   sortOrder: number;
 }
 

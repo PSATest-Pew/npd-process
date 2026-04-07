@@ -2,6 +2,23 @@
 
 import { Project } from "@/lib/types";
 import { useState } from "react";
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  sortableKeyboardCoordinates,
+  horizontalListSortingStrategy,
+  useSortable,
+} from "@dnd-kit/sortable";
+import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { CSS } from "@dnd-kit/utilities";
 
 interface TabBarProps {
   projects: Project[];
@@ -10,7 +27,112 @@ interface TabBarProps {
   onAddProject: (name: string) => void;
   onRenameProject: (id: string, name: string) => void;
   onDeleteProject: (id: string) => void;
+  onReorderProjects: (activeId: string, overId: string) => void;
   onExportPdf: () => void;
+}
+
+function SortableTab({
+  project,
+  isActive,
+  editingId,
+  editName,
+  setEditingId,
+  setEditName,
+  onSelect,
+  onRename,
+  onDelete,
+}: {
+  project: Project;
+  isActive: boolean;
+  editingId: string | null;
+  editName: string;
+  setEditingId: (id: string | null) => void;
+  setEditName: (name: string) => void;
+  onSelect: () => void;
+  onRename: (id: string) => void;
+  onDelete: (id: string, name: string) => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: project.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className={`group relative flex items-center gap-1 px-4 py-2.5 text-sm font-medium cursor-pointer rounded-t-lg transition-colors select-none ${
+        isActive
+          ? "bg-slate-950 text-blue-400 border border-slate-700 border-b-slate-950 -mb-px z-10"
+          : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
+      } ${isDragging ? "opacity-70 z-50" : ""}`}
+      onClick={onSelect}
+      {...attributes}
+      {...listeners}
+    >
+      {editingId === project.id ? (
+        <input
+          type="text"
+          value={editName}
+          onChange={(e) => setEditName(e.target.value)}
+          onBlur={() => onRename(project.id)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") onRename(project.id);
+            if (e.key === "Escape") setEditingId(null);
+          }}
+          onClick={(e) => e.stopPropagation()}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="bg-slate-800 border border-slate-600 rounded px-1.5 py-0.5 text-sm text-slate-100 w-32 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          autoFocus
+        />
+      ) : (
+        <>
+          <span
+            onDoubleClick={(e) => {
+              e.stopPropagation();
+              setEditingId(project.id);
+              setEditName(project.name);
+            }}
+          >
+            {project.name}
+          </span>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(project.id, project.name);
+            }}
+            onPointerDown={(e) => e.stopPropagation()}
+            className="ml-1 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-opacity"
+            title="Delete project"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="18" y1="6" x2="6" y2="18" />
+              <line x1="6" y1="6" x2="18" y2="18" />
+            </svg>
+          </button>
+        </>
+      )}
+    </div>
+  );
 }
 
 export default function TabBar({
@@ -20,12 +142,22 @@ export default function TabBar({
   onAddProject,
   onRenameProject,
   onDeleteProject,
+  onReorderProjects,
   onExportPdf,
 }: TabBarProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [newName, setNewName] = useState("");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 8 },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleAdd = () => {
     const trimmed = newName.trim();
@@ -50,71 +182,42 @@ export default function TabBar({
     }
   };
 
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (over && active.id !== over.id) {
+      onReorderProjects(active.id as string, over.id as string);
+    }
+  };
+
   return (
     <div className="border-b border-slate-700 bg-slate-900">
       <div className="flex items-center gap-1 px-4 pt-2 overflow-x-auto">
-        {projects.map((project) => (
-          <div
-            key={project.id}
-            className={`group relative flex items-center gap-1 px-4 py-2.5 text-sm font-medium cursor-pointer rounded-t-lg transition-colors ${
-              activeProjectId === project.id
-                ? "bg-slate-950 text-blue-400 border border-slate-700 border-b-slate-950 -mb-px z-10"
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800"
-            }`}
-            onClick={() => onSelectProject(project.id)}
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
+          modifiers={[restrictToHorizontalAxis]}
+        >
+          <SortableContext
+            items={projects.map((p) => p.id)}
+            strategy={horizontalListSortingStrategy}
           >
-            {editingId === project.id ? (
-              <input
-                type="text"
-                value={editName}
-                onChange={(e) => setEditName(e.target.value)}
-                onBlur={() => handleRename(project.id)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleRename(project.id);
-                  if (e.key === "Escape") setEditingId(null);
-                }}
-                onClick={(e) => e.stopPropagation()}
-                className="bg-slate-800 border border-slate-600 rounded px-1.5 py-0.5 text-sm text-slate-100 w-32 focus:outline-none focus:ring-1 focus:ring-blue-500"
-                autoFocus
+            {projects.map((project) => (
+              <SortableTab
+                key={project.id}
+                project={project}
+                isActive={activeProjectId === project.id}
+                editingId={editingId}
+                editName={editName}
+                setEditingId={setEditingId}
+                setEditName={setEditName}
+                onSelect={() => onSelectProject(project.id)}
+                onRename={handleRename}
+                onDelete={handleDelete}
               />
-            ) : (
-              <>
-                <span
-                  onDoubleClick={(e) => {
-                    e.stopPropagation();
-                    setEditingId(project.id);
-                    setEditName(project.name);
-                  }}
-                >
-                  {project.name}
-                </span>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(project.id, project.name);
-                  }}
-                  className="ml-1 opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 transition-opacity"
-                  title="Delete project"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="14"
-                    height="14"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <line x1="18" y1="6" x2="6" y2="18" />
-                    <line x1="6" y1="6" x2="18" y2="18" />
-                  </svg>
-                </button>
-              </>
-            )}
-          </div>
-        ))}
+            ))}
+          </SortableContext>
+        </DndContext>
 
         {isAdding ? (
           <div className="flex items-center gap-1 px-2 py-2">

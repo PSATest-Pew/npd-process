@@ -144,6 +144,8 @@ function createCards() {
     name,
     department: "",
     notes: "",
+    whatThisMeans: "",
+    whatIfWeDont: "",
     sortOrder: index,
   }));
 }
@@ -154,7 +156,7 @@ export function generateSeedData(): ProjectsData {
       id: uuidv4(),
       name,
       sortOrder: index,
-      cards: createCards(),
+      cards: name === "Copy Job" ? createCards() : [],
     })),
   };
 }
